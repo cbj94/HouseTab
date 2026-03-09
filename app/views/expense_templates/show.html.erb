@@ -1,156 +1,64 @@
-<h1>
-  Expense #<%= @the_expense.id %> details
-</h1>
+<h1><%= @the_expense.description %></h1>
+
+<nav>
+  <a href="/households/<%= @the_expense.household_id %>">Back to <%= @the_expense.household.name %></a>
+</nav>
+
+<hr>
 
 <article>
-  <div>
-    <a href="/expenses">
-      Go back
-    </a>
-  </div>
-
-  <div>
-    <a href="/delete_expense/<%= @the_expense.id %>">
-      Delete expense
-    </a>
-  </div>
-  <dl>
-    <dt>
-      Description
-    </dt>
-    <dd>
-      <%= @the_expense.description %>
-    </dd>
-
-    <dt>
-      Total amount
-    </dt>
-    <dd>
-      <%= @the_expense.total_amount %>
-    </dd>
-
-    <dt>
-      Date
-    </dt>
-    <dd>
-      <%= @the_expense.date %>
-    </dd>
-
-    <dt>
-      Notes
-    </dt>
-    <dd>
-      <%= @the_expense.notes %>
-    </dd>
-
-    <dt>
-      Payer
-    </dt>
-    <dd>
-      <%= @the_expense.payer_id %>
-    </dd>
-
-    <dt>
-      Household
-    </dt>
-    <dd>
-      <%= @the_expense.household_id %>
-    </dd>
-
-    <dt>
-      Category
-    </dt>
-    <dd>
-      <%= @the_expense.category_id %>
-    </dd>
-
-    <dt>
-      Created at
-    </dt>
-    <dd>
-      <%= time_ago_in_words(@the_expense.created_at) %> ago
-    </dd>
-
-    <dt>
-      Updated at
-    </dt>
-    <dd>
-      <%= time_ago_in_words(@the_expense.updated_at) %> ago
-    </dd>
-  </dl>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>Amount</strong></td>
+        <td>$<%= sprintf('%.2f', @the_expense.total_amount) %></td>
+      </tr>
+      <tr>
+        <td><strong>Paid by</strong></td>
+        <td><%= @the_expense.payer.first_name %> <%= @the_expense.payer.last_name %></td>
+      </tr>
+      <tr>
+        <td><strong>Category</strong></td>
+        <td><%= @the_expense.category.name %></td>
+      </tr>
+      <tr>
+        <td><strong>Date</strong></td>
+        <td><%= @the_expense.date.strftime("%B %d, %Y") %></td>
+      </tr>
+      <% if @the_expense.notes.present? %>
+        <tr>
+          <td><strong>Notes</strong></td>
+          <td><%= @the_expense.notes %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </article>
 
 <hr>
 
-
-<article>
-  <header>
-    <h2>
-      Edit expense
-    </h2>
-  </header>
-
-  <form action="/modify_expense/<%= @the_expense.id %>"  method="post" >
-    <div>
-      <label for="description_box">
-        Description
-      </label>
-
-      <input type="text" id="description_box" name="query_description" value="<%= @the_expense.description %>">
-    </div>
-
-    <div>
-      <label for="total_amount_box">
-        Total amount
-      </label>
-
-      <input type="text" id="total_amount_box" name="query_total_amount" value="<%= @the_expense.total_amount %>">
-    </div>
-
-    <div>
-      <label for="date_box">
-        Date
-      </label>
-
-      <input type="date" id="date_box" name="query_date" value="<%= @the_expense.date %>">
-    </div>
-
-    <div>
-      <label for="notes_box">
-        Notes
-      </label>
-
-      <input type="text" id="notes_box" name="query_notes" value="<%= @the_expense.notes %>">
-    </div>
-
-    <div>
-      <label for="payer_id_box">
-        Payer
-      </label>
-
-      <input type="text" id="payer_id_box" name="query_payer_id" value="<%= @the_expense.payer_id %>">
-    </div>
-
-    <div>
-      <label for="household_id_box">
-        Household
-      </label>
-
-      <input type="text" id="household_id_box" name="query_household_id" value="<%= @the_expense.household_id %>">
-    </div>
-
-    <div>
-      <label for="category_id_box">
-        Category
-      </label>
-
-      <input type="text" id="category_id_box" name="query_category_id" value="<%= @the_expense.category_id %>">
-    </div>
-
-    <button type="submit">
-      Update expense
-    </button>
-  </form>
-</article>
+<h2>Split Breakdown</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Person</th>
+      <th style="text-align: right;">Owes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @the_expense.expense_splits.each do |split| %>
+      <tr>
+        <td><%= split.user.first_name %> <%= split.user.last_name %></td>
+        <td style="text-align: right;">$<%= sprintf('%.2f', split.amount_owed) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <hr>
+
+<% if @the_expense.payer_id == current_user.id %>
+  <a href="/delete_expense/<%= @the_expense.id %>" style="color: red;"
+     onclick="return confirm('Delete this expense? This cannot be undone.')">Delete this expense</a>
+<% end %>
+

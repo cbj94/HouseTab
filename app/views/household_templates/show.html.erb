@@ -1,15 +1,26 @@
 <h1><%= @the_household.name %></h1>
 
 <nav>
-  <a href="/">Home</a>
-  <% if @membership.role == "creator" %>
-    | <a href="/delete_household/<%= @the_household.id %>">Delete Household</a>
-  <% end %>
+  <ul>
+    <li><a href="/">Home</a></li>
+  </ul>
+  <ul>
+    <li><a href="#members">Members</a></li>
+    <li><a href="#balances">Balances</a></li>
+    <li><a href="#spending">Spending</a></li>
+    <li><a href="#expenses">Expenses</a></li>
+    <li><a href="#add-expense">Add Expense</a></li>
+    <li><a href="#settle-up">Settle Up</a></li>
+    <li><a href="#settlements">Settlements</a></li>
+    <% if @membership.role == "creator" %>
+      <li><a href="/delete_household/<%= @the_household.id %>" style="color: red;">Delete</a></li>
+    <% end %>
+  </ul>
 </nav>
 
 <hr>
 
-<h2>Members (<%= @members.count %>)</h2>
+<h2 id="members">Members (<%= @members.count %>)</h2>
 <% @members.each do |member| %>
   <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
     <span><%= member.first_name %> <%= member.last_name %></span>
@@ -41,7 +52,7 @@
 
 <hr>
 
-<h2>Balances</h2>
+<h2 id="balances">Balances</h2>
 <% if @balances.empty? %>
   <p>No other members yet.</p>
 <% else %>
@@ -60,7 +71,7 @@
 
 <hr>
 
-<h2>Spending by Category</h2>
+<h2 id="spending">Spending by Category</h2>
 <% if @total_spending == 0 %>
   <p>No spending data yet.</p>
 <% else %>
@@ -93,7 +104,7 @@
 
 <hr>
 
-<h2>Recent Expenses</h2>
+<h2 id="expenses">Recent Expenses</h2>
 
 <% if @expenses.count == 0 %>
   <p>No expenses yet. Add one below!</p>
@@ -115,7 +126,7 @@
 
 <hr>
 
-<h2>Add an Expense</h2>
+<h2 id="add-expense">Add an Expense</h2>
 <form action="/insert_expense" method="post">
   <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
   <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
@@ -163,7 +174,7 @@
 
 <hr>
 
-<h2>Settle Up</h2>
+<h2 id="settle-up">Settle Up</h2>
 <form action="/insert_settlement" method="post">
   <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
   <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
@@ -201,7 +212,7 @@
 
 <hr>
 
-<h2>Recent Settlements</h2>
+<h2 id="settlements">Recent Settlements</h2>
 <% if @settlements.count == 0 %>
   <p>No settlements yet.</p>
 <% else %>
