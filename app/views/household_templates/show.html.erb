@@ -1,0 +1,66 @@
+<h1>
+  Household #<%= @the_household.id %> details
+</h1>
+
+<article>
+  <div>
+    <a href="/households">
+      Go back
+    </a>
+  </div>
+
+  <div>
+    <a href="/delete_household/<%= @the_household.id %>">
+      Delete household
+    </a>
+  </div>
+  <dl>
+    <dt>
+      Name
+    </dt>
+    <dd>
+      <%= @the_household.name %>
+    </dd>
+
+    <dt>
+      Created at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_household.created_at) %> ago
+    </dd>
+
+    <dt>
+      Updated at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_household.updated_at) %> ago
+    </dd>
+  </dl>
+</article>
+
+<hr>
+
+
+<article>
+  <header>
+    <h2>
+      Edit household
+    </h2>
+  </header>
+
+  <form action="/modify_household/<%= @the_household.id %>"  method="post" >
+    <div>
+      <label for="name_box">
+        Name
+      </label>
+
+      <input type="text" id="name_box" name="query_name" value="<%= @the_household.name %>">
+    </div>
+
+    <button type="submit">
+      Update household
+    </button>
+  </form>
+</article>
+
+<hr>

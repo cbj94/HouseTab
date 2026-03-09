@@ -1,0 +1,91 @@
+<h1>
+  List of all expenses
+</h1>
+
+<hr>
+
+<article>
+  <header>
+    <h2>
+      Add a new expense
+    </h2>
+  </header>
+
+  <form action="/insert_expense" method="post">
+    <div>
+      <label for="description_box">
+        Description
+      </label>
+
+      <input type="text" id="description_box" name="query_description">
+    </div>
+
+    <div>
+      <label for="total_amount_box">
+        Total amount
+      </label>
+
+      <input type="text" id="total_amount_box" name="query_total_amount">
+    </div>
+
+    <div>
+      <label for="date_box">
+        Date
+      </label>
+
+      <input type="date" id="date_box" name="query_date">
+    </div>
+
+    <div>
+      <label for="notes_box">
+        Notes
+      </label>
+
+      <input type="text" id="notes_box" name="query_notes">
+    </div>
+
+    <div>
+      <label for="payer_id_box">
+        Payer
+      </label>
+
+      <input type="text" id="payer_id_box" name="query_payer_id">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id">
+    </div>
+
+    <div>
+      <label for="category_id_box">
+        Category
+      </label>
+
+      <input type="text" id="category_id_box" name="query_category_id">
+    </div>
+
+    <button type="submit">
+      Create expense
+    </button>
+  </form>
+</article>
+
+<hr>
+
+<article>
+  <ul>
+    <% @list_of_expenses.each do |an_expense| %>
+      <li>
+        <a href="/expenses/<%= an_expense.id %>">
+          Expense #<%= an_expense.id %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</article>
+
+<hr>

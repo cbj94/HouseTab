@@ -1,0 +1,59 @@
+<h1>
+  List of all memberships
+</h1>
+
+<hr>
+
+<article>
+  <header>
+    <h2>
+      Add a new membership
+    </h2>
+  </header>
+
+  <form action="/insert_membership" method="post">
+    <div>
+      <label for="user_id_box">
+        User
+      </label>
+
+      <input type="text" id="user_id_box" name="query_user_id">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id">
+    </div>
+
+    <div>
+      <label for="role_box">
+        Role
+      </label>
+
+      <input type="text" id="role_box" name="query_role">
+    </div>
+
+    <button type="submit">
+      Create membership
+    </button>
+  </form>
+</article>
+
+<hr>
+
+<article>
+  <ul>
+    <% @list_of_memberships.each do |a_membership| %>
+      <li>
+        <a href="/memberships/<%= a_membership.id %>">
+          Membership #<%= a_membership.id %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</article>
+
+<hr>

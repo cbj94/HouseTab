@@ -1,0 +1,96 @@
+<h1>
+  Membership #<%= @the_membership.id %> details
+</h1>
+
+<article>
+  <div>
+    <a href="/memberships">
+      Go back
+    </a>
+  </div>
+
+  <div>
+    <a href="/delete_membership/<%= @the_membership.id %>">
+      Delete membership
+    </a>
+  </div>
+  <dl>
+    <dt>
+      User
+    </dt>
+    <dd>
+      <%= @the_membership.user_id %>
+    </dd>
+
+    <dt>
+      Household
+    </dt>
+    <dd>
+      <%= @the_membership.household_id %>
+    </dd>
+
+    <dt>
+      Role
+    </dt>
+    <dd>
+      <%= @the_membership.role %>
+    </dd>
+
+    <dt>
+      Created at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_membership.created_at) %> ago
+    </dd>
+
+    <dt>
+      Updated at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_membership.updated_at) %> ago
+    </dd>
+  </dl>
+</article>
+
+<hr>
+
+
+<article>
+  <header>
+    <h2>
+      Edit membership
+    </h2>
+  </header>
+
+  <form action="/modify_membership/<%= @the_membership.id %>"  method="post" >
+    <div>
+      <label for="user_id_box">
+        User
+      </label>
+
+      <input type="text" id="user_id_box" name="query_user_id" value="<%= @the_membership.user_id %>">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id" value="<%= @the_membership.household_id %>">
+    </div>
+
+    <div>
+      <label for="role_box">
+        Role
+      </label>
+
+      <input type="text" id="role_box" name="query_role" value="<%= @the_membership.role %>">
+    </div>
+
+    <button type="submit">
+      Update membership
+    </button>
+  </form>
+</article>
+
+<hr>

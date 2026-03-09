@@ -1,0 +1,156 @@
+<h1>
+  Expense #<%= @the_expense.id %> details
+</h1>
+
+<article>
+  <div>
+    <a href="/expenses">
+      Go back
+    </a>
+  </div>
+
+  <div>
+    <a href="/delete_expense/<%= @the_expense.id %>">
+      Delete expense
+    </a>
+  </div>
+  <dl>
+    <dt>
+      Description
+    </dt>
+    <dd>
+      <%= @the_expense.description %>
+    </dd>
+
+    <dt>
+      Total amount
+    </dt>
+    <dd>
+      <%= @the_expense.total_amount %>
+    </dd>
+
+    <dt>
+      Date
+    </dt>
+    <dd>
+      <%= @the_expense.date %>
+    </dd>
+
+    <dt>
+      Notes
+    </dt>
+    <dd>
+      <%= @the_expense.notes %>
+    </dd>
+
+    <dt>
+      Payer
+    </dt>
+    <dd>
+      <%= @the_expense.payer_id %>
+    </dd>
+
+    <dt>
+      Household
+    </dt>
+    <dd>
+      <%= @the_expense.household_id %>
+    </dd>
+
+    <dt>
+      Category
+    </dt>
+    <dd>
+      <%= @the_expense.category_id %>
+    </dd>
+
+    <dt>
+      Created at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_expense.created_at) %> ago
+    </dd>
+
+    <dt>
+      Updated at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_expense.updated_at) %> ago
+    </dd>
+  </dl>
+</article>
+
+<hr>
+
+
+<article>
+  <header>
+    <h2>
+      Edit expense
+    </h2>
+  </header>
+
+  <form action="/modify_expense/<%= @the_expense.id %>"  method="post" >
+    <div>
+      <label for="description_box">
+        Description
+      </label>
+
+      <input type="text" id="description_box" name="query_description" value="<%= @the_expense.description %>">
+    </div>
+
+    <div>
+      <label for="total_amount_box">
+        Total amount
+      </label>
+
+      <input type="text" id="total_amount_box" name="query_total_amount" value="<%= @the_expense.total_amount %>">
+    </div>
+
+    <div>
+      <label for="date_box">
+        Date
+      </label>
+
+      <input type="date" id="date_box" name="query_date" value="<%= @the_expense.date %>">
+    </div>
+
+    <div>
+      <label for="notes_box">
+        Notes
+      </label>
+
+      <input type="text" id="notes_box" name="query_notes" value="<%= @the_expense.notes %>">
+    </div>
+
+    <div>
+      <label for="payer_id_box">
+        Payer
+      </label>
+
+      <input type="text" id="payer_id_box" name="query_payer_id" value="<%= @the_expense.payer_id %>">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id" value="<%= @the_expense.household_id %>">
+    </div>
+
+    <div>
+      <label for="category_id_box">
+        Category
+      </label>
+
+      <input type="text" id="category_id_box" name="query_category_id" value="<%= @the_expense.category_id %>">
+    </div>
+
+    <button type="submit">
+      Update expense
+    </button>
+  </form>
+</article>
+
+<hr>

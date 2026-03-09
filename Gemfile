@@ -50,3 +50,5 @@ group :test do
   gem "shoulda-matchers", "~> 7.0" # One-liner tests for common patterns
   gem "webmock"                       # Mock HTTP requests in tests
 end
+
+gem "devise", "~> 4.9"

@@ -1,0 +1,141 @@
+<h1>
+  Settlement #<%= @the_settlement.id %> details
+</h1>
+
+<article>
+  <div>
+    <a href="/settlements">
+      Go back
+    </a>
+  </div>
+
+  <div>
+    <a href="/delete_settlement/<%= @the_settlement.id %>">
+      Delete settlement
+    </a>
+  </div>
+  <dl>
+    <dt>
+      Payer
+    </dt>
+    <dd>
+      <%= @the_settlement.payer_id %>
+    </dd>
+
+    <dt>
+      Payee
+    </dt>
+    <dd>
+      <%= @the_settlement.payee_id %>
+    </dd>
+
+    <dt>
+      Household
+    </dt>
+    <dd>
+      <%= @the_settlement.household_id %>
+    </dd>
+
+    <dt>
+      Amount
+    </dt>
+    <dd>
+      <%= @the_settlement.amount %>
+    </dd>
+
+    <dt>
+      Date
+    </dt>
+    <dd>
+      <%= @the_settlement.date %>
+    </dd>
+
+    <dt>
+      Notes
+    </dt>
+    <dd>
+      <%= @the_settlement.notes %>
+    </dd>
+
+    <dt>
+      Created at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_settlement.created_at) %> ago
+    </dd>
+
+    <dt>
+      Updated at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_settlement.updated_at) %> ago
+    </dd>
+  </dl>
+</article>
+
+<hr>
+
+
+<article>
+  <header>
+    <h2>
+      Edit settlement
+    </h2>
+  </header>
+
+  <form action="/modify_settlement/<%= @the_settlement.id %>"  method="post" >
+    <div>
+      <label for="payer_id_box">
+        Payer
+      </label>
+
+      <input type="text" id="payer_id_box" name="query_payer_id" value="<%= @the_settlement.payer_id %>">
+    </div>
+
+    <div>
+      <label for="payee_id_box">
+        Payee
+      </label>
+
+      <input type="text" id="payee_id_box" name="query_payee_id" value="<%= @the_settlement.payee_id %>">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id" value="<%= @the_settlement.household_id %>">
+    </div>
+
+    <div>
+      <label for="amount_box">
+        Amount
+      </label>
+
+      <input type="text" id="amount_box" name="query_amount" value="<%= @the_settlement.amount %>">
+    </div>
+
+    <div>
+      <label for="date_box">
+        Date
+      </label>
+
+      <input type="date" id="date_box" name="query_date" value="<%= @the_settlement.date %>">
+    </div>
+
+    <div>
+      <label for="notes_box">
+        Notes
+      </label>
+
+      <input type="text" id="notes_box" name="query_notes" value="<%= @the_settlement.notes %>">
+    </div>
+
+    <button type="submit">
+      Update settlement
+    </button>
+  </form>
+</article>
+
+<hr>

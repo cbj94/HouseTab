@@ -1,0 +1,51 @@
+<h1>
+  List of all categories
+</h1>
+
+<hr>
+
+<article>
+  <header>
+    <h2>
+      Add a new category
+    </h2>
+  </header>
+
+  <form action="/insert_category" method="post">
+    <div>
+      <label for="name_box">
+        Name
+      </label>
+
+      <input type="text" id="name_box" name="query_name">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id">
+    </div>
+
+    <button type="submit">
+      Create category
+    </button>
+  </form>
+</article>
+
+<hr>
+
+<article>
+  <ul>
+    <% @list_of_categories.each do |a_category| %>
+      <li>
+        <a href="/categories/<%= a_category.id %>">
+          Category #<%= a_category.id %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</article>
+
+<hr>

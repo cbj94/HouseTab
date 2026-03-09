@@ -1,0 +1,2 @@
+class ExpenseSplit < ApplicationRecord
+end

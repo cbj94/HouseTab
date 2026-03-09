@@ -1,0 +1,83 @@
+<h1>
+  List of all settlements
+</h1>
+
+<hr>
+
+<article>
+  <header>
+    <h2>
+      Add a new settlement
+    </h2>
+  </header>
+
+  <form action="/insert_settlement" method="post">
+    <div>
+      <label for="payer_id_box">
+        Payer
+      </label>
+
+      <input type="text" id="payer_id_box" name="query_payer_id">
+    </div>
+
+    <div>
+      <label for="payee_id_box">
+        Payee
+      </label>
+
+      <input type="text" id="payee_id_box" name="query_payee_id">
+    </div>
+
+    <div>
+      <label for="household_id_box">
+        Household
+      </label>
+
+      <input type="text" id="household_id_box" name="query_household_id">
+    </div>
+
+    <div>
+      <label for="amount_box">
+        Amount
+      </label>
+
+      <input type="text" id="amount_box" name="query_amount">
+    </div>
+
+    <div>
+      <label for="date_box">
+        Date
+      </label>
+
+      <input type="date" id="date_box" name="query_date">
+    </div>
+
+    <div>
+      <label for="notes_box">
+        Notes
+      </label>
+
+      <input type="text" id="notes_box" name="query_notes">
+    </div>
+
+    <button type="submit">
+      Create settlement
+    </button>
+  </form>
+</article>
+
+<hr>
+
+<article>
+  <ul>
+    <% @list_of_settlements.each do |a_settlement| %>
+      <li>
+        <a href="/settlements/<%= a_settlement.id %>">
+          Settlement #<%= a_settlement.id %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</article>
+
+<hr>

@@ -1,0 +1,96 @@
+<h1>
+  Expense split #<%= @the_expense_split.id %> details
+</h1>
+
+<article>
+  <div>
+    <a href="/expense_splits">
+      Go back
+    </a>
+  </div>
+
+  <div>
+    <a href="/delete_expense_split/<%= @the_expense_split.id %>">
+      Delete expense split
+    </a>
+  </div>
+  <dl>
+    <dt>
+      Expense
+    </dt>
+    <dd>
+      <%= @the_expense_split.expense_id %>
+    </dd>
+
+    <dt>
+      User
+    </dt>
+    <dd>
+      <%= @the_expense_split.user_id %>
+    </dd>
+
+    <dt>
+      Amount owed
+    </dt>
+    <dd>
+      <%= @the_expense_split.amount_owed %>
+    </dd>
+
+    <dt>
+      Created at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_expense_split.created_at) %> ago
+    </dd>
+
+    <dt>
+      Updated at
+    </dt>
+    <dd>
+      <%= time_ago_in_words(@the_expense_split.updated_at) %> ago
+    </dd>
+  </dl>
+</article>
+
+<hr>
+
+
+<article>
+  <header>
+    <h2>
+      Edit expense split
+    </h2>
+  </header>
+
+  <form action="/modify_expense_split/<%= @the_expense_split.id %>"  method="post" >
+    <div>
+      <label for="expense_id_box">
+        Expense
+      </label>
+
+      <input type="text" id="expense_id_box" name="query_expense_id" value="<%= @the_expense_split.expense_id %>">
+    </div>
+
+    <div>
+      <label for="user_id_box">
+        User
+      </label>
+
+      <input type="text" id="user_id_box" name="query_user_id" value="<%= @the_expense_split.user_id %>">
+    </div>
+
+    <div>
+      <label for="amount_owed_box">
+        Amount owed
+      </label>
+
+      <input type="text" id="amount_owed_box" name="query_amount_owed" value="<%= @the_expense_split.amount_owed %>">
+    </div>
+
+    <button type="submit">
+      Update expense split
+    </button>
+  </form>
+</article>
+
+<hr>
