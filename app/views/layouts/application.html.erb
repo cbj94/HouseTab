@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Rails 8 Template" %></title>
+    <title><%= content_for(:title) || "HouseTab" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -23,6 +23,30 @@
   </head>
 
   <body>
+    <nav>
+      <a href="/">HouseTab</a>
+
+      <% if current_user.present? %>
+        <a href="/users/edit">Edit profile</a>
+        <a href="/users/sign_out">Sign out</a>
+      <% else %>
+        <a href="/users/sign_up">Sign up</a>
+        <a href="/users/sign_in">Sign in</a>
+      <% end %>
+    </nav>
+
+    <% if notice.present? %>
+      <div style="color: green">
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <% if alert.present? %>
+      <div style="color: red">
+        <%= alert %>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
