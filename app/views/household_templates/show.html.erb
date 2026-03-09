@@ -31,6 +31,25 @@
 
 <hr>
 
+<h2>Balances</h2>
+<% if @balances.empty? %>
+  <p>No other members yet.</p>
+<% else %>
+  <% @balances.each do |member, amount| %>
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+      <% if amount > 0 %>
+        <span style="color: red;">You owe <strong><%= member.first_name %></strong> $<%= sprintf('%.2f', amount) %></span>
+      <% elsif amount < 0 %>
+        <span style="color: green;"><strong><%= member.first_name %></strong> owes you $<%= sprintf('%.2f', amount.abs) %></span>
+      <% else %>
+        <span>You and <strong><%= member.first_name %></strong> are settled up!</span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<hr>
+
 <h2>Recent Expenses</h2>
 
 <% if @expenses.count == 0 %>

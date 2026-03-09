@@ -25,6 +25,50 @@ class HouseholdsController < ApplicationController
       @members = @the_household.members
       @settlements = Settlement.where({ :household_id => @the_household.id }).order({ :date => :desc })
 
+      # Calculate balances for current user vs each other member
+      @balances = {}
+
+      @members.each do |member|
+        next if member.id == current_user.id
+
+        # What I owe them: my splits on expenses they paid for
+        i_owe_them = 0.0
+        their_expenses = Expense.where({ :household_id => @the_household.id, :payer_id => member.id })
+        their_expenses.each do |expense|
+          my_split = ExpenseSplit.where({ :expense_id => expense.id, :user_id => current_user.id }).at(0)
+          if my_split != nil
+            i_owe_them = i_owe_them + my_split.amount_owed.to_f
+          end
+        end
+
+        # What they owe me: their splits on expenses I paid for
+        they_owe_me = 0.0
+        my_expenses = Expense.where({ :household_id => @the_household.id, :payer_id => current_user.id })
+        my_expenses.each do |expense|
+          their_split = ExpenseSplit.where({ :expense_id => expense.id, :user_id => member.id }).at(0)
+          if their_split != nil
+            they_owe_me = they_owe_me + their_split.amount_owed.to_f
+          end
+        end
+
+        # Settlements I've made to them
+        my_payments = Settlement.where({ :household_id => @the_household.id, :payer_id => current_user.id, :payee_id => member.id })
+        my_payments.each do |settlement|
+          i_owe_them = i_owe_them - settlement.amount.to_f
+        end
+
+        # Settlements they've made to me
+        their_payments = Settlement.where({ :household_id => @the_household.id, :payer_id => member.id, :payee_id => current_user.id })
+        their_payments.each do |settlement|
+          they_owe_me = they_owe_me - settlement.amount.to_f
+        end
+
+        # Net balance: positive means I owe them, negative means they owe me
+        net = i_owe_them - they_owe_me
+
+        @balances[member] = net.round(2)
+      end
+
       render({ :template => "household_templates/show" })
     end
   end
