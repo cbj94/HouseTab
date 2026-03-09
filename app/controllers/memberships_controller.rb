@@ -18,16 +18,27 @@ class MembershipsController < ApplicationController
   end
 
   def create
+    household_id = params.fetch("query_household_id")
+    email = params.fetch("query_email")
+    role = params.fetch("query_role")
+
+    the_user = User.where({ :email => email }).at(0)
+
+    if the_user == nil
+      redirect_to("/households/#{household_id}", { :alert => "No user found with that email. Make sure they've signed up first." })
+      return
+    end
+
     the_membership = Membership.new
-    the_membership.user_id = params.fetch("query_user_id")
-    the_membership.household_id = params.fetch("query_household_id")
-    the_membership.role = params.fetch("query_role")
+    the_membership.user_id = the_user.id
+    the_membership.household_id = household_id
+    the_membership.role = role
 
     if the_membership.valid?
       the_membership.save
-      redirect_to("/households/#{the_membership.household_id}", { :notice => "Member added successfully." })
+      redirect_to("/households/#{the_membership.household_id}", { :notice => "#{the_user.first_name} added successfully!" })
     else
-      redirect_to("/households/#{params.fetch("query_household_id")}", { :alert => the_membership.errors.full_messages.to_sentence })
+      redirect_to("/households/#{household_id}", { :alert => the_membership.errors.full_messages.to_sentence })
     end
   end
 

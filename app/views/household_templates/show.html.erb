@@ -21,15 +21,8 @@
     <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
     <input type="hidden" name="query_role" value="member">
     <div>
-      <label for="user_id">Select User</label><br>
-      <select id="user_id" name="query_user_id">
-        <option value="">Choose...</option>
-        <% User.all.each do |user| %>
-          <% if !@members.include?(user) %>
-            <option value="<%= user.id %>"><%= user.first_name %> <%= user.last_name %> (<%= user.email %>)</option>
-          <% end %>
-        <% end %>
-      </select>
+      <label for="email">Roommate's Email</label><br>
+      <input type="email" id="email" name="query_email" placeholder="e.g. bob@example.com">
     </div>
     <br>
     <button type="submit">Add Member</button>
