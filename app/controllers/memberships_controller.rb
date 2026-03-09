@@ -63,8 +63,39 @@ class MembershipsController < ApplicationController
     the_membership = Membership.where({ :id => the_id }).at(0)
 
     household_id = the_membership.household_id
-    the_membership.destroy
+    user_id = the_membership.user_id
 
-    redirect_to("/households/#{household_id}", { :notice => "Member removed successfully." })
+    # Check if this member has any outstanding balance
+    has_balance = false
+
+    # Check expenses they paid for that others owe on
+    their_expenses = Expense.where({ :household_id => household_id, :payer_id => user_id })
+    their_expenses.each do |expense|
+      splits = ExpenseSplit.where({ :expense_id => expense.id })
+      splits.each do |split|
+        if split.user_id != user_id
+          has_balance = true
+        end
+      end
+    end
+
+    # Check expenses others paid where this member has splits
+    all_expenses = Expense.where({ :household_id => household_id })
+    all_expenses.each do |expense|
+      if expense.payer_id != user_id
+        their_split = ExpenseSplit.where({ :expense_id => expense.id, :user_id => user_id }).at(0)
+        if their_split != nil
+          has_balance = true
+        end
+      end
+    end
+
+    if has_balance
+      the_user = User.where({ :id => user_id }).at(0)
+      redirect_to("/households/#{household_id}", { :alert => "Cannot remove #{the_user.first_name} — they have outstanding balances. Settle up first." })
+    else
+      the_membership.destroy
+      redirect_to("/households/#{household_id}", { :notice => "Member removed successfully." })
+    end
   end
 end

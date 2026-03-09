@@ -10,43 +10,56 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <nav>
-      <a href="/">HouseTab</a>
+  <body class="container">
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/"><strong>HouseTab</strong></a></li>
+        </ul>
+        <% if current_user.present? %>
+          <ul>
+            <li><small>Signed in as <%= current_user.first_name %></small></li>
+            <li><a href="/users/edit">Edit profile</a></li>
+            <li><a href="/users/sign_out">Sign out</a></li>
+          </ul>
+        <% else %>
+          <ul>
+            <li><a href="/users/sign_up">Sign up</a></li>
+            <li><a href="/users/sign_in">Sign in</a></li>
+          </ul>
+        <% end %>
+      </nav>
+    </header>
 
-      <% if current_user.present? %>
-        <a href="/users/edit">Edit profile</a>
-        <a href="/users/sign_out">Sign out</a>
-      <% else %>
-        <a href="/users/sign_up">Sign up</a>
-        <a href="/users/sign_in">Sign in</a>
+    <main>
+      <% if notice.present? %>
+        <div role="alert" style="color: green; margin-bottom: 15px;">
+          <%= notice %>
+        </div>
       <% end %>
-    </nav>
 
-    <% if notice.present? %>
-      <div style="color: green">
-        <%= notice %>
-      </div>
-    <% end %>
+      <% if alert.present? %>
+        <div role="alert" style="color: red; margin-bottom: 15px;">
+          <%= alert %>
+        </div>
+      <% end %>
 
-    <% if alert.present? %>
-      <div style="color: red">
-        <%= alert %>
-      </div>
-    <% end %>
+      <%= yield %>
+    </main>
 
-    <%= yield %>
+    <footer>
+      <small>HouseTab &copy; <%= Date.today.year %></small>
+    </footer>
   </body>
 </html>

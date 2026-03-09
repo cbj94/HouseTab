@@ -11,7 +11,17 @@
 
 <h2>Members (<%= @members.count %>)</h2>
 <% @members.each do |member| %>
-  <span><%= member.first_name %> <%= member.last_name %></span><br>
+  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+    <span><%= member.first_name %> <%= member.last_name %></span>
+    <% membership = Membership.where({ :user_id => member.id, :household_id => @the_household.id }).at(0) %>
+    <% if membership.role == "creator" %>
+      <small style="opacity: 0.6;">(creator)</small>
+    <% elsif @membership.role == "creator" && member.id != current_user.id %>
+      <a href="/delete_membership/<%= membership.id %>" title="Remove <%= member.first_name %>"
+         style="color: gray; text-decoration: none; font-size: 0.9em; opacity: 0.5;"
+         onclick="return confirm('Remove <%= member.first_name %> from this household?')">×</a>
+    <% end %>
+  </div>
 <% end %>
 
 <% if @membership.role == "creator" %>
