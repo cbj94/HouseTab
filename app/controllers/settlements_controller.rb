@@ -28,9 +28,9 @@ class SettlementsController < ApplicationController
 
     if the_settlement.valid?
       the_settlement.save
-      redirect_to("/settlements", { :notice => "Settlement created successfully." })
+      redirect_to("/households/#{the_settlement.household_id}", { :notice => "Payment recorded successfully." })
     else
-      redirect_to("/settlements", { :alert => the_settlement.errors.full_messages.to_sentence })
+      redirect_to("/households/#{params.fetch("query_household_id")}", { :alert => the_settlement.errors.full_messages.to_sentence })
     end
   end
 
@@ -47,9 +47,9 @@ class SettlementsController < ApplicationController
 
     if the_settlement.valid?
       the_settlement.save
-      redirect_to("/settlements/#{the_settlement.id}", { :notice => "Settlement updated successfully." } )
+      redirect_to("/households/#{the_settlement.household_id}", { :notice => "Settlement updated successfully." })
     else
-      redirect_to("/settlements/#{the_settlement.id}", { :alert => the_settlement.errors.full_messages.to_sentence })
+      redirect_to("/households/#{the_settlement.household_id}", { :alert => the_settlement.errors.full_messages.to_sentence })
     end
   end
 
@@ -57,8 +57,9 @@ class SettlementsController < ApplicationController
     the_id = params.fetch("path_id")
     the_settlement = Settlement.where({ :id => the_id }).at(0)
 
+    household_id = the_settlement.household_id
     the_settlement.destroy
 
-    redirect_to("/settlements", { :notice => "Settlement deleted successfully." } )
+    redirect_to("/households/#{household_id}", { :notice => "Settlement deleted successfully." })
   end
 end

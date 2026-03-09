@@ -29,9 +29,22 @@ class ExpensesController < ApplicationController
 
     if the_expense.valid?
       the_expense.save
-      redirect_to("/expenses", { :notice => "Expense created successfully." })
+
+      # Create expense splits for each checked member
+      split_user_ids = params.fetch("split_user_ids", [])
+      split_amount = (the_expense.total_amount / split_user_ids.length).round(2)
+
+      split_user_ids.each do |user_id|
+        es = ExpenseSplit.new
+        es.expense_id = the_expense.id
+        es.user_id = user_id
+        es.amount_owed = split_amount
+        es.save
+      end
+
+      redirect_to("/households/#{the_expense.household_id}", { :notice => "Expense added successfully." })
     else
-      redirect_to("/expenses", { :alert => the_expense.errors.full_messages.to_sentence })
+      redirect_to("/households/#{params.fetch("query_household_id")}", { :alert => the_expense.errors.full_messages.to_sentence })
     end
   end
 
@@ -44,12 +57,11 @@ class ExpensesController < ApplicationController
     the_expense.date = params.fetch("query_date")
     the_expense.notes = params.fetch("query_notes")
     the_expense.payer_id = params.fetch("query_payer_id")
-    the_expense.household_id = params.fetch("query_household_id")
     the_expense.category_id = params.fetch("query_category_id")
 
     if the_expense.valid?
       the_expense.save
-      redirect_to("/expenses/#{the_expense.id}", { :notice => "Expense updated successfully." } )
+      redirect_to("/expenses/#{the_expense.id}", { :notice => "Expense updated successfully." })
     else
       redirect_to("/expenses/#{the_expense.id}", { :alert => the_expense.errors.full_messages.to_sentence })
     end
@@ -59,8 +71,9 @@ class ExpensesController < ApplicationController
     the_id = params.fetch("path_id")
     the_expense = Expense.where({ :id => the_id }).at(0)
 
+    household_id = the_expense.household_id
     the_expense.destroy
 
-    redirect_to("/expenses", { :notice => "Expense deleted successfully." } )
+    redirect_to("/households/#{household_id}", { :notice => "Expense deleted successfully." })
   end
 end

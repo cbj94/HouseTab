@@ -25,9 +25,9 @@ class MembershipsController < ApplicationController
 
     if the_membership.valid?
       the_membership.save
-      redirect_to("/memberships", { :notice => "Membership created successfully." })
+      redirect_to("/households/#{the_membership.household_id}", { :notice => "Member added successfully." })
     else
-      redirect_to("/memberships", { :alert => the_membership.errors.full_messages.to_sentence })
+      redirect_to("/households/#{params.fetch("query_household_id")}", { :alert => the_membership.errors.full_messages.to_sentence })
     end
   end
 
@@ -41,9 +41,9 @@ class MembershipsController < ApplicationController
 
     if the_membership.valid?
       the_membership.save
-      redirect_to("/memberships/#{the_membership.id}", { :notice => "Membership updated successfully." } )
+      redirect_to("/households/#{the_membership.household_id}", { :notice => "Membership updated successfully." })
     else
-      redirect_to("/memberships/#{the_membership.id}", { :alert => the_membership.errors.full_messages.to_sentence })
+      redirect_to("/households/#{the_membership.household_id}", { :alert => the_membership.errors.full_messages.to_sentence })
     end
   end
 
@@ -51,8 +51,9 @@ class MembershipsController < ApplicationController
     the_id = params.fetch("path_id")
     the_membership = Membership.where({ :id => the_id }).at(0)
 
+    household_id = the_membership.household_id
     the_membership.destroy
 
-    redirect_to("/memberships", { :notice => "Membership deleted successfully." } )
+    redirect_to("/households/#{household_id}", { :notice => "Member removed successfully." })
   end
 end

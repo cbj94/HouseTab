@@ -1,66 +1,164 @@
-<h1>
-  Household #<%= @the_household.id %> details
-</h1>
+<h1><%= @the_household.name %></h1>
 
-<article>
-  <div>
-    <a href="/households">
-      Go back
-    </a>
-  </div>
-
-  <div>
-    <a href="/delete_household/<%= @the_household.id %>">
-      Delete household
-    </a>
-  </div>
-  <dl>
-    <dt>
-      Name
-    </dt>
-    <dd>
-      <%= @the_household.name %>
-    </dd>
-
-    <dt>
-      Created at
-    </dt>
-    <dd>
-      <%= time_ago_in_words(@the_household.created_at) %> ago
-    </dd>
-
-    <dt>
-      Updated at
-    </dt>
-    <dd>
-      <%= time_ago_in_words(@the_household.updated_at) %> ago
-    </dd>
-  </dl>
-</article>
+<nav>
+  <a href="/">Home</a>
+  <% if @membership.role == "creator" %>
+    | <a href="/delete_household/<%= @the_household.id %>">Delete Household</a>
+  <% end %>
+</nav>
 
 <hr>
 
+<h2>Members (<%= @members.count %>)</h2>
+<% @members.each do |member| %>
+  <span><%= member.first_name %> <%= member.last_name %></span><br>
+<% end %>
 
-<article>
-  <header>
-    <h2>
-      Edit household
-    </h2>
-  </header>
-
-  <form action="/modify_household/<%= @the_household.id %>"  method="post" >
+<% if @membership.role == "creator" %>
+  <br>
+  <h3>Add a Member</h3>
+  <form action="/insert_membership" method="post">
+    <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+    <input type="hidden" name="query_role" value="member">
     <div>
-      <label for="name_box">
-        Name
-      </label>
-
-      <input type="text" id="name_box" name="query_name" value="<%= @the_household.name %>">
+      <label for="user_id">Select User</label><br>
+      <select id="user_id" name="query_user_id">
+        <option value="">Choose...</option>
+        <% User.all.each do |user| %>
+          <% if !@members.include?(user) %>
+            <option value="<%= user.id %>"><%= user.first_name %> <%= user.last_name %> (<%= user.email %>)</option>
+          <% end %>
+        <% end %>
+      </select>
     </div>
-
-    <button type="submit">
-      Update household
-    </button>
+    <br>
+    <button type="submit">Add Member</button>
   </form>
-</article>
+<% end %>
 
 <hr>
+
+<h2>Recent Expenses</h2>
+
+<% if @expenses.count == 0 %>
+  <p>No expenses yet. Add one below!</p>
+<% else %>
+  <% @expenses.each do |expense| %>
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+      <strong><%= expense.description %></strong> — $<%= sprintf('%.2f', expense.total_amount) %><br>
+      Paid by: <%= expense.payer.first_name %> <%= expense.payer.last_name %><br>
+      Category: <%= expense.category.name %><br>
+      Date: <%= expense.date.strftime("%B %d, %Y") %><br>
+      Split among: <%= expense.beneficiaries.map { |u| u.first_name }.join(", ") %><br>
+      <% if expense.notes.present? %>
+        Notes: <%= expense.notes %><br>
+      <% end %>
+      <a href="/expenses/<%= expense.id %>">View details</a>
+    </div>
+  <% end %>
+<% end %>
+
+<hr>
+
+<h2>Add an Expense</h2>
+<form action="/insert_expense" method="post">
+  <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+  <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
+
+  <div>
+    <label for="description">Description</label><br>
+    <input type="text" id="description" name="query_description" placeholder="e.g. Costco run">
+  </div>
+
+  <div>
+    <label for="total_amount">Total Amount ($)</label><br>
+    <input type="number" id="total_amount" name="query_total_amount" step="0.01" min="0">
+  </div>
+
+  <div>
+    <label for="date">Date</label><br>
+    <input type="date" id="date" name="query_date" value="<%= Date.today %>">
+  </div>
+
+  <div>
+    <label for="category_id">Category</label><br>
+    <select id="category_id" name="query_category_id">
+      <% Category.where({ :household_id => nil }).each do |cat| %>
+        <option value="<%= cat.id %>"><%= cat.name %></option>
+      <% end %>
+    </select>
+  </div>
+
+  <div>
+    <label for="notes">Notes (optional)</label><br>
+    <input type="text" id="notes" name="query_notes">
+  </div>
+
+  <div>
+    <label>Split among:</label><br>
+    <% @members.each do |member| %>
+      <input type="checkbox" name="split_user_ids[]" value="<%= member.id %>" checked>
+      <%= member.first_name %> <%= member.last_name %><br>
+    <% end %>
+  </div>
+
+  <br>
+  <button type="submit">Add Expense</button>
+</form>
+
+<hr>
+
+<h2>Settle Up</h2>
+<form action="/insert_settlement" method="post">
+  <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+  <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
+
+  <div>
+    <label for="payee_id">Pay</label><br>
+    <select id="payee_id" name="query_payee_id">
+      <option value="">Choose who to pay...</option>
+      <% @members.each do |member| %>
+        <% if member.id != current_user.id %>
+          <option value="<%= member.id %>"><%= member.first_name %> <%= member.last_name %></option>
+        <% end %>
+      <% end %>
+    </select>
+  </div>
+
+  <div>
+    <label for="amount">Amount ($)</label><br>
+    <input type="number" id="amount" name="query_amount" step="0.01" min="0">
+  </div>
+
+  <div>
+    <label for="settlement_date">Date</label><br>
+    <input type="date" id="settlement_date" name="query_date" value="<%= Date.today %>">
+  </div>
+
+  <div>
+    <label for="settlement_notes">Notes (optional)</label><br>
+    <input type="text" id="settlement_notes" name="query_notes" placeholder="e.g. For the Costco run">
+  </div>
+
+  <br>
+  <button type="submit">Record Payment</button>
+</form>
+
+<hr>
+
+<h2>Recent Settlements</h2>
+<% if @settlements.count == 0 %>
+  <p>No settlements yet.</p>
+<% else %>
+  <% @settlements.each do |settlement| %>
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+      <strong><%= settlement.payer.first_name %></strong> paid
+      <strong><%= settlement.payee.first_name %></strong>
+      — $<%= sprintf('%.2f', settlement.amount) %><br>
+      Date: <%= settlement.date.strftime("%B %d, %Y") %><br>
+      <% if settlement.notes.present? %>
+        Notes: <%= settlement.notes %><br>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

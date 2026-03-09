@@ -1,2 +1,40 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<h1>Welcome to HouseTab, <%= current_user.first_name %>!</h1>
+
+<% if @households.count == 0 %>
+  <h2>You're not in a household yet</h2>
+  <p>Create a new household or ask a roommate to add you to theirs.</p>
+
+  <h3>Create a Household</h3>
+  <form action="/insert_household" method="post">
+    <div>
+      <label for="name">Household Name</label><br>
+      <input type="text" id="name" name="query_name" placeholder="e.g. Apt 4B">
+    </div>
+    <br>
+    <button type="submit">Create Household</button>
+  </form>
+
+<% else %>
+  <h2>Your Households</h2>
+  <p>You belong to multiple households. Pick one to view:</p>
+
+  <% @households.each do |household| %>
+    <div>
+      <a href="/households/<%= household.id %>">
+        <strong><%= household.name %></strong>
+      </a>
+      — <%= household.members.count %> members
+    </div>
+  <% end %>
+
+  <hr>
+  <h3>Create Another Household</h3>
+  <form action="/insert_household" method="post">
+    <div>
+      <label for="name">Household Name</label><br>
+      <input type="text" id="name" name="query_name" placeholder="e.g. Lake House">
+    </div>
+    <br>
+    <button type="submit">Create Household</button>
+  </form>
+<% end %>
