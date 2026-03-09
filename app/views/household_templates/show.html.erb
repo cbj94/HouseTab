@@ -60,6 +60,39 @@
 
 <hr>
 
+<h2>Spending by Category</h2>
+<% if @total_spending == 0 %>
+  <p>No spending data yet.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th style="text-align: right;">Total</th>
+        <th style="text-align: right;">% of Spending</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @category_totals.each do |name, total| %>
+        <tr>
+          <td><%= name %></td>
+          <td style="text-align: right;">$<%= sprintf('%.2f', total) %></td>
+          <td style="text-align: right;"><%= sprintf('%.0f', (total / @total_spending) * 100) %>%</td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td style="text-align: right;"><strong>$<%= sprintf('%.2f', @total_spending) %></strong></td>
+        <td style="text-align: right;"><strong>100%</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+<% end %>
+
+<hr>
+
 <h2>Recent Expenses</h2>
 
 <% if @expenses.count == 0 %>

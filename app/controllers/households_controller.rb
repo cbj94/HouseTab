@@ -69,6 +69,20 @@ class HouseholdsController < ApplicationController
         @balances[member] = net.round(2)
       end
 
+      # Spending by category
+      @category_totals = {}
+      @expenses.each do |expense|
+        cat_name = expense.category.name
+        if @category_totals[cat_name] == nil
+          @category_totals[cat_name] = 0.0
+        end
+        @category_totals[cat_name] = @category_totals[cat_name] + expense.total_amount.to_f
+      end
+      @category_totals = @category_totals.sort_by { |name, total| -total }
+
+      # Total household spending
+      @total_spending = @expenses.sum(:total_amount).to_f
+
       render({ :template => "household_templates/show" })
     end
   end
