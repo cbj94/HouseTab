@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
+
+  root to: "pages#home" 
+
   # Routes for the Settlement resource:
 
   # CREATE
@@ -112,8 +116,5 @@ Rails.application.routes.draw do
   get("/delete_household/:path_id", { :controller => "households", :action => "destroy" })
 
   #------------------------------
-
-  devise_for :users
-  # This is a blank app! Pick your first screen, build out the RCAV, and go from there. E.g.:
-  # get("/your_first_screen", { :controller => "pages", :action => "first" })
+  
 end
