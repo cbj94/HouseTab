@@ -25,7 +25,7 @@
     <header>
       <nav>
         <ul>
-          <li><a href="/"><strong>HouseTab</strong></a></li>
+          <li><a href="/" class="brand">HouseTab</a></li>
         </ul>
         <% if current_user.present? %>
           <ul>
@@ -44,13 +44,13 @@
 
     <main>
       <% if notice.present? %>
-        <div role="alert" style="color: green; margin-bottom: 15px;">
+        <div class="flash-notice">
           <%= notice %>
         </div>
       <% end %>
 
       <% if alert.present? %>
-        <div role="alert" style="color: red; margin-bottom: 15px;">
+        <div class="flash-alert">
           <%= alert %>
         </div>
       <% end %>

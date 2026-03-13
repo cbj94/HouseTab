@@ -1,245 +1,256 @@
 <h1><%= @the_household.name %></h1>
 
-<nav>
-  <ul>
-    <li><a href="/">Home</a></li>
-  </ul>
-  <ul>
-    <li><a href="#members">Members</a></li>
-    <li><a href="#balances">Balances</a></li>
-    <li><a href="#spending">Spending</a></li>
-    <li><a href="#expenses">Expenses</a></li>
-    <li><a href="#add-expense">Add Expense</a></li>
-    <li><a href="#settle-up">Settle Up</a></li>
-    <li><a href="#settlements">Settlements</a></li>
-    <% if @membership.role == "creator" %>
-      <li><a href="/delete_household/<%= @the_household.id %>" style="color: red;">Delete</a></li>
-    <% end %>
-  </ul>
-</nav>
+<div class="dash-nav">
+  <a href="/">Home</a>
+  <a href="#members">Members</a>
+  <a href="#balances">Balances</a>
+  <a href="#spending">Spending</a>
+  <a href="#expenses">Expenses</a>
+  <a href="#add-expense">Add Expense</a>
+  <a href="#settle-up">Settle Up</a>
+  <a href="#settlements">Settlements</a>
+  <% if @membership.role == "creator" %>
+    <a href="/delete_household/<%= @the_household.id %>" class="btn-danger"
+       onclick="return confirm('Are you sure you want to delete this household?')">Delete Household</a>
+  <% end %>
+</div>
 
-<hr>
+<!-- ===== ROW 1: Balances + Spending ===== -->
+<div class="dashboard-grid">
 
-<h2 id="members">Members (<%= @members.count %>)</h2>
-<% @members.each do |member| %>
-  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-    <span><%= member.first_name %> <%= member.last_name %></span>
-    <% membership = Membership.where({ :user_id => member.id, :household_id => @the_household.id }).at(0) %>
-    <% if membership.role == "creator" %>
-      <small style="opacity: 0.6;">(creator)</small>
-    <% elsif @membership.role == "creator" && member.id != current_user.id %>
-      <a href="/delete_membership/<%= membership.id %>" title="Remove <%= member.first_name %>"
-         style="color: gray; text-decoration: none; font-size: 0.9em; opacity: 0.5;"
-         onclick="return confirm('Remove <%= member.first_name %> from this household?')">×</a>
+  <div class="dashboard-section" id="balances">
+    <h2>Balances</h2>
+    <% if @balances.empty? %>
+      <p class="text-muted">No other members yet.</p>
+    <% else %>
+      <% @balances.each do |member, amount| %>
+        <div class="balance-item">
+          <% if amount > 0 %>
+            <span class="balance-owe">You owe <strong><%= member.first_name %></strong></span>
+            <span class="balance-amount balance-owe">$<%= sprintf('%.2f', amount) %></span>
+          <% elsif amount < 0 %>
+            <span class="balance-owed"><strong><%= member.first_name %></strong> owes you</span>
+            <span class="balance-amount balance-owed">$<%= sprintf('%.2f', amount.abs) %></span>
+          <% else %>
+            <span class="balance-settled">You and <strong><%= member.first_name %></strong> are settled up!</span>
+            <span class="balance-amount balance-settled">$0.00</span>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
-<% end %>
 
-<% if @membership.role == "creator" %>
-  <br>
-  <h3>Add a Member</h3>
-  <form action="/insert_membership" method="post">
-    <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
-    <input type="hidden" name="query_role" value="member">
-    <div>
-      <label for="email">Roommate's Email</label><br>
-      <input type="email" id="email" name="query_email" placeholder="e.g. bob@example.com">
-    </div>
-    <br>
-    <button type="submit">Add Member</button>
-  </form>
-<% end %>
+  <div class="dashboard-section" id="spending">
+    <h2>Spending by Category</h2>
+    <% if @total_spending == 0 %>
+      <p class="text-muted">No spending data yet.</p>
+    <% else %>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th style="text-align: right;">Total</th>
+            <th style="text-align: right;">%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @category_totals.each do |name, total| %>
+            <tr>
+              <td><%= name %></td>
+              <td style="text-align: right;">$<%= sprintf('%.2f', total) %></td>
+              <td style="text-align: right;"><%= sprintf('%.0f', (total / @total_spending) * 100) %>%</td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td style="text-align: right;"><strong>$<%= sprintf('%.2f', @total_spending) %></strong></td>
+            <td style="text-align: right;"><strong>100%</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    <% end %>
+  </div>
 
-<hr>
+</div>
 
-<h2 id="balances">Balances</h2>
-<% if @balances.empty? %>
-  <p>No other members yet.</p>
-<% else %>
-  <% @balances.each do |member, amount| %>
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-      <% if amount > 0 %>
-        <span style="color: red;">You owe <strong><%= member.first_name %></strong> $<%= sprintf('%.2f', amount) %></span>
-      <% elsif amount < 0 %>
-        <span style="color: green;"><strong><%= member.first_name %></strong> owes you $<%= sprintf('%.2f', amount.abs) %></span>
-      <% else %>
-        <span>You and <strong><%= member.first_name %></strong> are settled up!</span>
+<!-- ===== MEMBERS ===== -->
+<div class="dashboard-section" id="members" style="margin-bottom: 1.25rem;">
+  <h2>Members (<%= @members.count %>)</h2>
+  <% @members.each do |member| %>
+    <div class="member-item">
+      <span><%= member.first_name %> <%= member.last_name %></span>
+      <% membership = Membership.where({ :user_id => member.id, :household_id => @the_household.id }).at(0) %>
+      <% if membership.role == "creator" %>
+        <span class="member-badge">creator</span>
+      <% elsif @membership.role == "creator" && member.id != current_user.id %>
+        <a href="/delete_membership/<%= membership.id %>" class="member-remove"
+           onclick="return confirm('Remove <%= member.first_name %> from this household?')">remove</a>
       <% end %>
     </div>
   <% end %>
-<% end %>
 
-<hr>
-
-<h2 id="spending">Spending by Category</h2>
-<% if @total_spending == 0 %>
-  <p>No spending data yet.</p>
-<% else %>
-  <table>
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th style="text-align: right;">Total</th>
-        <th style="text-align: right;">% of Spending</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @category_totals.each do |name, total| %>
-        <tr>
-          <td><%= name %></td>
-          <td style="text-align: right;">$<%= sprintf('%.2f', total) %></td>
-          <td style="text-align: right;"><%= sprintf('%.0f', (total / @total_spending) * 100) %>%</td>
-        </tr>
-      <% end %>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td><strong>Total</strong></td>
-        <td style="text-align: right;"><strong>$<%= sprintf('%.2f', @total_spending) %></strong></td>
-        <td style="text-align: right;"><strong>100%</strong></td>
-      </tr>
-    </tfoot>
-  </table>
-<% end %>
-
-<hr>
-
-<h2 id="expenses">Recent Expenses</h2>
-
-<% if @expenses.count == 0 %>
-  <p>No expenses yet. Add one below!</p>
-<% else %>
-  <% @expenses.each do |expense| %>
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-      <strong><%= expense.description %></strong> — $<%= sprintf('%.2f', expense.total_amount) %><br>
-      Paid by: <%= expense.payer.first_name %> <%= expense.payer.last_name %><br>
-      Category: <%= expense.category.name %><br>
-      Date: <%= expense.date.strftime("%B %d, %Y") %><br>
-      Split among: <%= expense.beneficiaries.map { |u| u.first_name }.join(", ") %><br>
-      <% if expense.notes.present? %>
-        Notes: <%= expense.notes %><br>
-      <% end %>
-      <a href="/expenses/<%= expense.id %>">View details</a>
-    </div>
+  <% if @membership.role == "creator" %>
+    <form action="/insert_membership" method="post" style="margin-top: 1rem; display: flex; gap: 8px; align-items: flex-end;">
+      <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+      <input type="hidden" name="query_role" value="member">
+      <div style="flex: 1;">
+        <label for="email">Add a roommate</label>
+        <input type="email" id="email" name="query_email" placeholder="email@example.com" style="margin-bottom: 0;">
+      </div>
+      <button type="submit" style="margin-bottom: 0; white-space: nowrap;">Add</button>
+    </form>
   <% end %>
-<% end %>
+</div>
 
-<hr>
+<!-- ===== RECENT EXPENSES ===== -->
+<div class="dashboard-section" id="expenses" style="margin-bottom: 1.25rem;">
+  <h2>Recent Expenses</h2>
 
-<h2 id="add-expense">Add an Expense</h2>
-<form action="/insert_expense" method="post">
-  <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
-  <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
-
-  <div>
-    <label for="description">Description</label><br>
-    <input type="text" id="description" name="query_description" placeholder="e.g. Costco run">
-  </div>
-
-  <div>
-    <label for="total_amount">Total Amount ($)</label><br>
-    <input type="number" id="total_amount" name="query_total_amount" step="0.01" min="0">
-  </div>
-
-  <div>
-    <label for="date">Date</label><br>
-    <input type="date" id="date" name="query_date" value="<%= Date.today %>">
-  </div>
-
-  <div>
-    <label for="category_id">Category</label><br>
-    <select id="category_id" name="query_category_id">
-      <% Category.where({ :household_id => nil }).each do |cat| %>
-        <option value="<%= cat.id %>"><%= cat.name %></option>
-      <% end %>
-    </select>
-  </div>
-
-  <div>
-    <label for="notes">Notes (optional)</label><br>
-    <input type="text" id="notes" name="query_notes">
-  </div>
-
-  <div>
-    <label>Split among:</label><br>
-    <% @members.each do |member| %>
-      <input type="checkbox" name="split_user_ids[]" value="<%= member.id %>" checked>
-      <%= member.first_name %> <%= member.last_name %><br>
+  <% if @expenses.count == 0 %>
+    <p class="text-muted">No expenses yet. Add one below!</p>
+  <% else %>
+    <% @expenses.each do |expense| %>
+      <div class="expense-card">
+        <div class="expense-header">
+          <span class="expense-title"><%= expense.description %></span>
+          <span class="expense-amount">$<%= sprintf('%.2f', expense.total_amount) %></span>
+        </div>
+        <div class="expense-meta">
+          <span>Paid by <%= expense.payer.first_name %></span>
+          <span><%= expense.category.name %></span>
+          <span><%= expense.date.strftime("%b %d, %Y") %></span>
+          <br>
+          <span>Split: <%= expense.beneficiaries.map { |u| u.first_name }.join(", ") %></span>
+          <% if expense.notes.present? %>
+            <br><span>Note: <%= expense.notes %></span>
+          <% end %>
+        </div>
+      </div>
     <% end %>
-  </div>
+  <% end %>
+</div>
 
-  <br>
-  <button type="submit">Add Expense</button>
-</form>
+<!-- ===== ROW: Add Expense + Settle Up side by side ===== -->
+<div class="dashboard-grid">
 
-<hr>
+  <div class="dashboard-section" id="add-expense">
+    <h2>Add an Expense</h2>
+    <form action="/insert_expense" method="post">
+      <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+      <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
 
-<h2 id="settle-up">Settle Up</h2>
-<form action="/insert_settlement" method="post">
-  <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
-  <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
+      <div>
+        <label for="description">Description</label>
+        <input type="text" id="description" name="query_description" placeholder="e.g. Costco run">
+      </div>
 
-  <div>
-    <label for="payee_id">Pay</label><br>
-    <select id="payee_id" name="query_payee_id">
-      <option value="" data-amount="0">Choose who to pay...</option>
-      <% @members.each do |member| %>
-        <% if member.id != current_user.id %>
-          <% owed = [@balances[member], 0].max %>
-          <option value="<%= member.id %>" data-amount="<%= sprintf('%.2f', owed) %>"><%= member.first_name %> <%= member.last_name %></option>
+      <div>
+        <label for="total_amount">Total Amount ($)</label>
+        <input type="number" id="total_amount" name="query_total_amount" step="0.01" min="0">
+      </div>
+
+      <div>
+        <label for="date">Date</label>
+        <input type="date" id="date" name="query_date" value="<%= Date.today %>">
+      </div>
+
+      <div>
+        <label for="category_id">Category</label>
+        <select id="category_id" name="query_category_id">
+          <% Category.where({ :household_id => nil }).each do |cat| %>
+            <option value="<%= cat.id %>"><%= cat.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div>
+        <label for="notes">Notes (optional)</label>
+        <input type="text" id="notes" name="query_notes">
+      </div>
+
+      <div>
+        <label>Split among:</label><br>
+        <% @members.each do |member| %>
+          <label style="font-size: 0.88rem; color: var(--ht-text); display: inline-flex; align-items: center; gap: 4px; margin-right: 12px;">
+            <input type="checkbox" name="split_user_ids[]" value="<%= member.id %>" checked>
+            <%= member.first_name %>
+          </label>
         <% end %>
-      <% end %>
-    </select>
+      </div>
+
+      <button type="submit" style="margin-top: 0.5rem;">Add Expense</button>
+    </form>
   </div>
 
-  <div>
-    <label for="amount">Amount ($)</label><br>
-    <input type="number" id="amount" name="query_amount" step="0.01" min="0" max="0">
+  <div class="dashboard-section" id="settle-up">
+    <h2>Settle Up</h2>
+    <form action="/insert_settlement" method="post">
+      <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+      <input type="hidden" name="query_payer_id" value="<%= current_user.id %>">
+
+      <div>
+        <label for="payee_id">Pay</label>
+        <select id="payee_id" name="query_payee_id">
+          <option value="" data-amount="0">Choose who to pay...</option>
+          <% @members.each do |member| %>
+            <% if member.id != current_user.id %>
+              <% owed = [@balances[member], 0].max %>
+              <option value="<%= member.id %>" data-amount="<%= sprintf('%.2f', owed) %>"><%= member.first_name %> <%= member.last_name %></option>
+            <% end %>
+          <% end %>
+        </select>
+      </div>
+
+      <div>
+        <label for="settlement_amount">Amount ($)</label>
+        <input type="number" id="settlement_amount" name="query_amount" step="0.01" min="0" max="0">
+      </div>
+
+      <div>
+        <label for="settlement_date">Date</label>
+        <input type="date" id="settlement_date" name="query_date" value="<%= Date.today %>">
+      </div>
+
+      <div>
+        <label for="settlement_notes">Notes (optional)</label>
+        <input type="text" id="settlement_notes" name="query_notes" placeholder="e.g. For the Costco run">
+      </div>
+
+      <button type="submit" style="margin-top: 0.5rem;">Record Payment</button>
+    </form>
   </div>
 
-  <div>
-    <label for="amount">Amount ($)</label><br>
-    <input type="number" id="amount" name="query_amount" step="0.01" min="0">
-  </div>
+</div>
 
-  <div>
-    <label for="settlement_date">Date</label><br>
-    <input type="date" id="settlement_date" name="query_date" value="<%= Date.today %>">
-  </div>
-
-  <div>
-    <label for="settlement_notes">Notes (optional)</label><br>
-    <input type="text" id="settlement_notes" name="query_notes" placeholder="e.g. For the Costco run">
-  </div>
-
-  <br>
-  <button type="submit">Record Payment</button>
-</form>
-
-<hr>
-
-<h2 id="settlements">Recent Settlements</h2>
-<% if @settlements.count == 0 %>
-  <p>No settlements yet.</p>
-<% else %>
-  <% @settlements.each do |settlement| %>
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-      <strong><%= settlement.payer.first_name %></strong> paid
-      <strong><%= settlement.payee.first_name %></strong>
-      — $<%= sprintf('%.2f', settlement.amount) %><br>
-      Date: <%= settlement.date.strftime("%B %d, %Y") %><br>
-      <% if settlement.notes.present? %>
-        Notes: <%= settlement.notes %><br>
-      <% end %>
-    </div>
+<!-- ===== RECENT SETTLEMENTS ===== -->
+<div class="dashboard-section" id="settlements">
+  <h2>Recent Settlements</h2>
+  <% if @settlements.count == 0 %>
+    <p class="text-muted">No settlements yet.</p>
+  <% else %>
+    <% @settlements.each do |settlement| %>
+      <div class="settlement-item">
+        <span><strong><%= settlement.payer.first_name %></strong> paid <strong><%= settlement.payee.first_name %></strong>
+          <% if settlement.notes.present? %>
+            <span class="text-muted" style="font-size: 0.82rem;"> — <%= settlement.notes %></span>
+          <% end %>
+        </span>
+        <span>
+          <span class="settlement-amount">$<%= sprintf('%.2f', settlement.amount) %></span>
+          <span class="text-muted" style="font-size: 0.8rem; margin-left: 8px;"><%= settlement.date.strftime("%b %d") %></span>
+        </span>
+      </div>
+    <% end %>
   <% end %>
-<% end %>
+</div>
 
 <script>
   document.getElementById("payee_id").addEventListener("change", function() {
     var selected = this.options[this.selectedIndex];
     var owed = selected.getAttribute("data-amount");
-    var amountField = document.getElementById("amount");
+    var amountField = document.getElementById("settlement_amount");
     amountField.value = owed;
     amountField.max = owed;
   });

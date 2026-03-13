@@ -1,40 +1,43 @@
-<h1>Welcome to HouseTab, <%= current_user.first_name %>!</h1>
+<div class="hero">
+  <h1>Welcome back, <%= current_user.first_name %></h1>
+  <p>Manage shared expenses with your roommates — no awkward conversations needed.</p>
+</div>
 
 <% if @households.count == 0 %>
-  <h2>You're not in a household yet</h2>
-  <p>Create a new household or ask a roommate to add you to theirs.</p>
+  <div class="card" style="text-align: center; padding: 2.5rem;">
+    <h2>You're not in a household yet</h2>
+    <p class="text-muted">Create a new household or ask a roommate to add you to theirs.</p>
+  </div>
 
-  <h3>Create a Household</h3>
-  <form action="/insert_household" method="post">
-    <div>
-      <label for="name">Household Name</label><br>
-      <input type="text" id="name" name="query_name" placeholder="e.g. Apt 4B">
-    </div>
-    <br>
-    <button type="submit">Create Household</button>
-  </form>
+  <div class="create-section">
+    <h3>Create a Household</h3>
+    <form action="/insert_household" method="post">
+      <div>
+        <label for="name">Household Name</label>
+        <input type="text" id="name" name="query_name" placeholder="e.g. Apt 4B">
+      </div>
+      <button type="submit">Create Household</button>
+    </form>
+  </div>
 
 <% else %>
-  <h2>Your Households</h2>
-  <p>You belong to multiple households. Pick one to view:</p>
+  <p class="section-label">Your Households</p>
 
   <% @households.each do |household| %>
-    <div>
-      <a href="/households/<%= household.id %>">
-        <strong><%= household.name %></strong>
-      </a>
-      — <%= household.members.count %> members
-    </div>
+    <a href="/households/<%= household.id %>" class="household-card">
+      <strong><%= household.name %></strong>
+      <span class="member-count"><%= household.members.count %> members</span>
+    </a>
   <% end %>
 
-  <hr>
-  <h3>Create Another Household</h3>
-  <form action="/insert_household" method="post">
-    <div>
-      <label for="name">Household Name</label><br>
-      <input type="text" id="name" name="query_name" placeholder="e.g. Lake House">
-    </div>
-    <br>
-    <button type="submit">Create Household</button>
-  </form>
+  <div class="create-section">
+    <h3>Create Another Household</h3>
+    <form action="/insert_household" method="post">
+      <div>
+        <label for="name">Household Name</label>
+        <input type="text" id="name" name="query_name" placeholder="e.g. Lake House">
+      </div>
+      <button type="submit">Create Household</button>
+    </form>
+  </div>
 <% end %>
