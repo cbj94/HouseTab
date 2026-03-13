@@ -182,13 +182,19 @@
   <div>
     <label for="payee_id">Pay</label><br>
     <select id="payee_id" name="query_payee_id">
-      <option value="">Choose who to pay...</option>
+      <option value="" data-amount="0">Choose who to pay...</option>
       <% @members.each do |member| %>
         <% if member.id != current_user.id %>
-          <option value="<%= member.id %>"><%= member.first_name %> <%= member.last_name %></option>
+          <% owed = [@balances[member], 0].max %>
+          <option value="<%= member.id %>" data-amount="<%= sprintf('%.2f', owed) %>"><%= member.first_name %> <%= member.last_name %></option>
         <% end %>
       <% end %>
     </select>
+  </div>
+
+  <div>
+    <label for="amount">Amount ($)</label><br>
+    <input type="number" id="amount" name="query_amount" step="0.01" min="0" max="0">
   </div>
 
   <div>
@@ -228,3 +234,13 @@
     </div>
   <% end %>
 <% end %>
+
+<script>
+  document.getElementById("payee_id").addEventListener("change", function() {
+    var selected = this.options[this.selectedIndex];
+    var owed = selected.getAttribute("data-amount");
+    var amountField = document.getElementById("amount");
+    amountField.value = owed;
+    amountField.max = owed;
+  });
+</script>
