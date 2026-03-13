@@ -516,3 +516,52 @@ footer small {
 .mt-1 { margin-top: 0.5rem; }
 .mt-2 { margin-top: 1rem; }
 
+/* --- Split Chips --- */
+.split-chip input[type="checkbox"] {
+  display: none !important;
+}
+
+.split-chip span {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: all 0.15s ease;
+}
+
+.split-chip input[type="checkbox"]:checked + span {
+  background: var(--ht-primary);
+  color: #fff;
+  border-color: var(--ht-primary-bright);
+}
+
+.split-chip span:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.split-chip input[type="checkbox"]:checked + span:hover {
+  background: var(--ht-primary-hover);
+}
+
+/* --- Scrollable Lists --- */
+.scrollable-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ht-border-light) transparent;
+}
+
+.scrollable-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+  background: var(--ht-border-light);
+  border-radius: 3px;
+}

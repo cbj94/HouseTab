@@ -3,7 +3,7 @@ class PagesController < ApplicationController
     @memberships = current_user.memberships
     @households = current_user.joined_households
 
-    if @households.count == 1
+    if @households.count == 1 && params[:new].blank?
       redirect_to("/households/#{@households.first.id}")
     end
   end
