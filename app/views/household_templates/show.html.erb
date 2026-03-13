@@ -84,24 +84,23 @@
       <% membership = Membership.where({ :user_id => member.id, :household_id => @the_household.id }).at(0) %>
       <% if membership.role == "creator" %>
         <span class="member-badge">creator</span>
-      <% elsif @membership.role == "creator" && member.id != current_user.id %>
+      <% end %>
+      <% if member.id != current_user.id %>
         <a href="/delete_membership/<%= membership.id %>" class="member-remove"
            onclick="return confirm('Remove <%= member.first_name %> from this household?')">remove</a>
       <% end %>
     </div>
   <% end %>
 
-  <% if @membership.role == "creator" %>
-    <form action="/insert_membership" method="post" style="margin-top: 1rem; display: flex; gap: 8px; align-items: flex-end;">
-      <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
-      <input type="hidden" name="query_role" value="member">
-      <div style="flex: 1;">
-        <label for="email">Add a roommate</label>
-        <input type="email" id="email" name="query_email" placeholder="email@example.com" style="margin-bottom: 0;">
-      </div>
-      <button type="submit" style="margin-bottom: 0; white-space: nowrap;">Add</button>
-    </form>
-  <% end %>
+  <form action="/insert_membership" method="post" style="margin-top: 1rem; display: flex; gap: 8px; align-items: flex-end;">
+    <input type="hidden" name="query_household_id" value="<%= @the_household.id %>">
+    <input type="hidden" name="query_role" value="member">
+    <div style="flex: 1;">
+      <label for="email">Add a roommate</label>
+      <input type="email" id="email" name="query_email" placeholder="email@example.com" style="margin-bottom: 0;">
+    </div>
+    <button type="submit" style="margin-bottom: 0; white-space: nowrap;">Add</button>
+  </form>
 </div>
 
 <!-- ===== RECENT EXPENSES ===== -->
